@@ -11,7 +11,7 @@ public class TennisCourtService {
 
     private final TennisCourtRepository tennisCourtRepository;
 
-    private final ScheduleService scheduleService;
+//    private final ScheduleService scheduleService;
 
     private final TennisCourtMapper tennisCourtMapper;
 
@@ -27,7 +27,7 @@ public class TennisCourtService {
 
     public TennisCourtDTO findTennisCourtWithSchedulesById(Long tennisCourtId) {
         TennisCourtDTO tennisCourtDTO = findTennisCourtById(tennisCourtId);
-        tennisCourtDTO.setTennisCourtSchedules(scheduleService.findSchedulesByTennisCourtId(tennisCourtId));
+//        tennisCourtDTO.setTennisCourtSchedules(scheduleService.findSchedulesByTennisCourtId(tennisCourtId));
         return tennisCourtDTO;
     }
 }

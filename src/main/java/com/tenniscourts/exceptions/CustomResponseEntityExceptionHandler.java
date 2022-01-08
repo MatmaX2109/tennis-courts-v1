@@ -5,7 +5,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +15,10 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -83,6 +89,23 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
                                 constraintViolation.getPropertyPath() + " - " +
                                         constraintViolation.getMessage())
                         .collect(Collectors.joining()));
+        return buildResponseEntity(errorDetails, BAD_REQUEST);
+    }
+
+    @Override
+    public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+        StringBuilder details = new StringBuilder();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            details.append(fieldName + " -> " + errorMessage + " " + System.getProperty("line.separator"));
+
+        });
+
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),
+                "Validation Error",details.toString());
+
         return buildResponseEntity(errorDetails, BAD_REQUEST);
     }
 
